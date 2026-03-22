@@ -12,19 +12,10 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true
-      - name: Install Git LFS and track pkl files
-        run: |
-          git lfs install
-          git lfs track "*.pkl"
-          git add .gitattributes
-          git config user.email "github-actions@github.com"
-          git config user.name "GitHub Actions"
-          git add -A
-          git diff --cached --quiet || git commit -m "Track pkl files with Git LFS"
-      - name: Fetch HF Space history and push
+      - name: Install huggingface_hub
+        run: pip install -U "huggingface_hub[cli,hf_xet]"
+      - name: Upload to Hugging Face Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          git remote add space https://logn1602:$HF_TOKEN@huggingface.co/spaces/logn1602/newswise-ai || true
-          git fetch space main --depth=1 || true
-          git push -f space main
+          huggingface-cli upload logn1602/newswise-ai . . --repo-type=space --token=$HF_TOKEN
