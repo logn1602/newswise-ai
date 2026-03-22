@@ -8,12 +8,12 @@ jobs:
   sync-to-hub:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           lfs: true
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       - name: Install huggingface_hub
@@ -22,4 +22,17 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          huggingface-cli upload logn1602/newswise-ai . . --repo-type=space --token=$HF_TOKEN
+          python << 'EOF'
+          import os
+          from huggingface_hub import HfApi
+          
+          token = os.environ["HF_TOKEN"]
+          api = HfApi(token=token)
+          api.upload_folder(
+              folder_path=".",
+              repo_id="logn1602/newswise-ai",
+              repo_type="space",
+              ignore_patterns=[".github/*", ".git/*"]
+          )
+          print("Successfully synced to Hugging Face!")
+          EOF
