@@ -12,6 +12,10 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
       - name: Install huggingface_hub
         run: pip install -U "huggingface_hub[cli,hf_xet]"
       - name: Upload to Hugging Face Space
